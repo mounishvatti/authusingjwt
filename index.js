@@ -44,7 +44,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/me', (req, res) => {
-  const token = req.headers.authorization;
+  const token = req.headers.token;
 
   try {
     const userDetails = jwt.verify(token, JWT_SECRET);
