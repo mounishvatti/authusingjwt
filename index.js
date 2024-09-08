@@ -1,38 +1,48 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const path = require('path');
+const cors = require('cors'); // Import cors middleware
+const jwt = require('jsonwebtoken');
 const fs = require('fs');
-let users = require('./users.json');
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || 'ALL_I_CARE_ABOUT_IS_JWT_SECRET';
 
-users = JSON.parse(fs.readFileSync(path.join(__dirname, 'users.json')));
+let users = JSON.parse(fs.readFileSync(path.join(__dirname, 'users.json')));
+app.use(express.urlencoded({ extended: true })); // Handle form data
+app.use(cors()); // Enable CORS for all routes
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Let’s learn about JWTs');
-});
-
-// Helper function to save users back to users.json
 function saveUsers() {
   fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2));
 }
 
-app.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
-  if (name && email && password) {
-    const user = { name: name, email: email, password: password };
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.post('/register', (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+
+  if (name && email && password && confirmPassword) {
+    if (password !== confirmPassword) {
+      return res.status(400).send('Passwords do not match');
+    }
+    const user = { name, email, password };
     users.push(user);
-    saveUsers(); // Save the updated users array back to users.json
+    saveUsers();
     res.send(users);
   } else {
     res.status(400).send('Please provide all the fields');
   }
 });
 
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+app.post('/login', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
   const user = users.find((user) => user.email === email && user.password === password);
 
   if (user) {

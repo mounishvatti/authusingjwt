@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login Form</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+    <script>
+      // Handle login
+      async function login() {
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
+
+        try {
+          const response = await axios.post("http://localhost:3000/login", {
+            email,
+            password,
+          });
+          alert("Logged in successfully");
+          localStorage.setItem("token", response.data.token); // Save token
+        } catch (error) {
+          alert(error.response.data || "Login failed");
+        }
+      }
+
+      // Handle signup
+      async function signup() {
+        const name = document.getElementById("signup-name").value;
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
+        const confirmPassword = document.getElementById(
+          "signup-confirmPassword"
+        ).value;
+
+        try {
+          const response = await axios.post("http://localhost:3000/register", {
+            name,
+            email,
+            password,
+            confirmPassword,
+          });
+          alert("Signup successful");
+        } catch (error) {
+          alert(error.response.data || "Signup failed");
+        }
+      }
+
+      // Handle logout
+      function logout() {
+        localStorage.removeItem("token"); // Clear token
+        alert("Logged out successfully");
+      }
+    </script>
+  </head>
+  <body>
+    <h3>Login</h3>
+    <input
+      id="login-email"
+      type="email"
+      name="email"
+      placeholder="Email"
+      required
+    />
+    <input
+      id="login-password"
+      type="password"
+      name="password"
+      placeholder="Password"
+      required
+    />
+    <button onclick="login()">Login</button>
+
+    <h3>Signup</h3>
+    <input
+      id="signup-name"
+      type="text"
+      name="name"
+      placeholder="Name"
+      required
+    />
+    <input
+      id="signup-email"
+      type="email"
+      name="email"
+      placeholder="Email"
+      required
+    />
+    <input
+      id="signup-password"
+      type="password"
+      name="password"
+      placeholder="Password"
+      required
+    />
+    <input
+      id="signup-confirmPassword"
+      type="password"
+      name="confirmPassword"
+      placeholder="Confirm Password"
+      required
+    />
+    <button onclick="signup()">Signup</button>
+
+    <h3>Profile</h3>
+    <div id="profile"></div>
+
+    <button onclick="logout()">Logout</button>
+  </body>
+</html>
